@@ -70,10 +70,7 @@ resource "aws_iam_role_policy" "codebuild_role_policy" {
       ],
       "Condition": {
         "StringEquals": {
-          "ec2:Subnet": [
-            "${data.aws_subnet.private_subnet_a.arn}",
-            "${data.aws_subnet.private_subnet_b.arn}"
-          ],
+          "ec2:Subnet": data.aws_subnet.private_subnets.*.arn,
           "ec2:AuthorizedService": "codebuild.amazonaws.com"
         }
       }

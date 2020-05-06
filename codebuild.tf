@@ -13,6 +13,11 @@ data "aws_subnet" "private_subnet_b" {
   id  = "${local.private_subnet_b_id}"
 }
 
+data "aws_subnet" "private_subnets" {
+  count = length(var.subnets)
+  id    = var.subnets[count.index]
+}
+
 resource "aws_codebuild_project" "build" {
   name          = "${var.app_name}-${local.stack}-build"
   description   = ""
