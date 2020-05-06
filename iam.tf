@@ -18,85 +18,13 @@ EOF
 
 resource "aws_iam_role_policy" "codebuild_role_policy" {
   role   = "${aws_iam_role.codebuild_iam_role.name}"
-  policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "ssm:GetParameters"
-      ],
-      "Resource": "arn:aws:ssm:${var.region}:${var.aws_account_id}:parameter/${var.environment}/*"
-    },
-    {
-        "Action": [
-            "s3:*"
-        ],
-        "Resource": "${data.aws_s3_bucket.codepipeline_bucket.arn}/*",
-        "Effect": "Allow"
-    },
-    {
-      "Effect": "Allow",
-      "Resource": [
-        "*"
-      ],
-      "Action": [
-        "logs:CreateLogGroup",
-        "logs:CreateLogStream",
-        "logs:PutLogEvents"
-      ]
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-        "ec2:CreateNetworkInterface",
-        "ec2:DescribeDhcpOptions",
-        "ec2:DescribeNetworkInterfaces",
-        "ec2:DeleteNetworkInterface",
-        "ec2:DescribeSubnets",
-        "ec2:DescribeSecurityGroups",
-        "ec2:DescribeVpcs"
-      ],
-      "Resource": "*"
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-        "ec2:CreateNetworkInterfacePermission"
-      ],
-      "Resource": [
-        "arn:aws:ec2:${var.region}:${var.aws_account_id}:network-interface/*"
-      ],
-      "Condition": {
-        "StringEquals": {
-          "ec2:Subnet": data.aws_subnet.private_subnets.*.arn,
-          "ec2:AuthorizedService": "codebuild.amazonaws.com"
-        }
-      }
-    },
-  {
-      "Effect": "Allow",
-      "Action": [
-        "ecr:GetAuthorizationToken",
-        "ecr:GetDownloadUrlForLayer",
-        "ecr:BatchGetImage",
-        "ecr:BatchCheckLayerAvailability",
-        "ecr:PutImage",
-        "ecr:InitiateLayerUpload",
-        "ecr:UploadLayerPart",
-        "ecr:CompleteLayerUpload",
-        "ecr:DescribeImages",
-        "ecr:ListImages"
-      ],
-      "Resource": [
-          "*"
-      ]
-    }
-  ]
-}
-    
-EOF
+  policy = templatefile("${path.module}/templates/codebuild_role_policy.tmpl", { 
+    region = var.region, 
+    aws_account_id = var.aws_account_id,
+    environment = var.environment,
+    codepipeline_bucket_arn = data.aws_s3_bucket.codepipeline_bucket.arn,
+    private_subnet_arns = join(",", [for arn in data.aws_subnet.private_subnets.*.arn : format("\"%s\"", arn)])
+  })
 }
 
 resource "aws_iam_role" "codedeploy_iam_role" {
