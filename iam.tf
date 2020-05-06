@@ -23,7 +23,7 @@ resource "aws_iam_role_policy" "codebuild_role_policy" {
     aws_account_id = var.aws_account_id,
     environment = var.environment,
     codepipeline_bucket_arn = data.aws_s3_bucket.codepipeline_bucket.arn,
-    private_subnet_arns = join(",", [for arn in data.aws_subnet.private_subnets.*.arn : format("\"%s\"", arn)])
+    private_subnet_arns = join(",", [for arn in data.aws_subnet.private_subnets[*].arn : format("\"%s\"", arn)])
   })
 }
 
