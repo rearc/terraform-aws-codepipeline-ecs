@@ -51,6 +51,11 @@ resource "aws_codebuild_project" "build" {
     }
 
     environment_variable {
+      name  = "STACK"
+      value = "${local.stack}"
+    }
+
+    environment_variable {
       name  = "CONTAINER_COMMAND"
       value = "${jsonencode(var.task_command)}"
     }
@@ -117,6 +122,11 @@ resource "aws_codebuild_project" "e2e_tests" {
     environment_variable {
       name  = "ENVIRONMENT"
       value = "${var.environment}"
+    }
+
+    environment_variable {
+      name  = "STACK"
+      value = "${local.stack}"
     }
 
     environment_variable {
@@ -187,6 +197,11 @@ resource "aws_codebuild_project" "unit_tests" {
     environment_variable {
       name  = "ENVIRONMENT"
       value = "${var.environment}"
+    }
+
+    environment_variable {
+      name  = "STACK"
+      value = "${local.stack}"
     }
 
     environment_variable {
