@@ -149,7 +149,7 @@ resource "aws_codebuild_project" "e2e_tests" {
 
   source {
     type            = "CODEPIPELINE"
-    buildspec       = "test_buildspec.yml"
+    buildspec       = "buildspec-cypress.yml"
   }
 
   vpc_config {

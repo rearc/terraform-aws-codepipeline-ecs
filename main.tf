@@ -204,7 +204,7 @@ resource "aws_codepipeline" "e_pipeline" {
   }
 
   stage {
-    name = "Test"
+    name = "Cypress"
     action {
       name             = "Test"
       category         = "Test"
