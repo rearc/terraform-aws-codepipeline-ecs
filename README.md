@@ -4,17 +4,17 @@
 
 # terraform-aws-codepipeline-ecs
 
-Terraform CI/CD module using GitHub for version control and AWS CodePipeline, CodeBuild, and CodeDeploy to build, test, and deploy applications on ECS.
+Terraform module to provide CI/CD through CodePipeline, CodeBuild, and CodeDeploy to build, test, and deploy applications developed on GitHub to ECS.
 
 ## Introduction
 
 The module will create:
 
-* GitHub webhooks
 * CodePipeline pipelines (build -> unit tests -> deploy -> end-to-end tests and variations)
 * CodeBuild projects (build, unit tests, deploy, and end-to-end tests)
 * CodeDeploy application and deployment group
 * Required IAM roles
+* GitHub webhooks
 
 ## Usage
 

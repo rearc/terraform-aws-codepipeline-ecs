@@ -1,16 +1,15 @@
 
-# Need to refactor to handle subnet_ids inputs other than a list of two subnet IDs.
-locals {
-    private_subnet_a_id = var.subnets[0]
-    private_subnet_b_id = var.subnets[1]
-}
-
 data "aws_subnet" "private_subnet_a" {
-  id  = "${local.private_subnet_a_id}"
+  id  = var.subnets[0]
 }
 
-data "aws_subnet" "private_subnet_b" {
-  id  = "${local.private_subnet_b_id}"
+data "aws_vpc" "codebuild_vpc" {
+  id = data.aws_subnet.private_subnet_a.vpc_id
+}
+
+data "aws_subnet" "private_subnets" {
+  count = length(var.subnets)
+  id    = var.subnets[count.index]
 }
 
 resource "aws_codebuild_project" "build" {
@@ -79,7 +78,7 @@ resource "aws_codebuild_project" "build" {
   }
 
   vpc_config {
-    vpc_id = "${data.aws_subnet.private_subnet_a.vpc_id}"
+    vpc_id = data.aws_vpc.codebuild_vpc.id
 
     subnets = var.subnets
 
@@ -154,7 +153,7 @@ resource "aws_codebuild_project" "e2e_tests" {
   }
 
   vpc_config {
-    vpc_id = "${data.aws_subnet.private_subnet_a.vpc_id}"
+    vpc_id = data.aws_vpc.codebuild_vpc.id
 
     subnets = var.subnets
 
@@ -229,7 +228,7 @@ resource "aws_codebuild_project" "unit_tests" {
   }
 
   vpc_config {
-    vpc_id = "${data.aws_subnet.private_subnet_a.vpc_id}"
+    vpc_id = data.aws_vpc.codebuild_vpc.id
 
     subnets = var.subnets
 
