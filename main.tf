@@ -80,6 +80,77 @@ resource "aws_codepipeline" "bd_pipeline" {
   }
 }
 
+resource "aws_codepipeline" "bu_pipeline" {
+  count    = contains(var.pipeline_types,"build-unit") ? 1 : 0
+  name     = "${var.app_name}-${local.stack}-build-unit"
+  role_arn = "${aws_iam_role.codepipeline_role.arn}"
+
+  artifact_store {
+    location = data.aws_s3_bucket.codepipeline_bucket.bucket
+    type     = "S3"
+  }
+
+  stage {
+    name = "Source"
+
+    action {
+      name             = "github_source"
+      category         = "Source"
+      owner            = "ThirdParty"
+      provider         = "GitHub"
+      version          = "1"
+      output_artifacts = ["code"]
+
+      configuration    = {
+        OAuthToken           = "${var.github_token}"
+        Owner                = "${var.repo_owner}"
+        Repo                 = "${var.app_name}"
+        Branch               = "${var.branch_name}"
+        PollForSourceChanges = "false"
+      }
+    }
+  }
+
+  stage {
+    name = "Build"
+
+    action {
+      name             = "Build"
+      category         = "Build"
+      owner            = "AWS"
+      provider         = "CodeBuild"
+      input_artifacts  = ["code"]
+      output_artifacts = ["ImageArtifact"]
+      version          = "1"
+
+      configuration    = {
+        ProjectName          = aws_codebuild_project.build.name
+        EnvironmentVariables = jsonencode([{name: "COMMIT_ID", type: "PLAINTEXT", value: "${var.commit_id}"}])
+      }
+    }
+  }
+
+  stage {
+    name = "Test"
+
+    action {
+      name             = "Test"
+      category         = "Test"
+      owner            = "AWS"
+      provider         = "CodeBuild"
+      input_artifacts  = ["code"]
+      output_artifacts = ["ResultsArtifact"]
+      version          = "1"
+
+      configuration    = {
+        ProjectName          = "${aws_codebuild_project.unit_tests.name}"
+        EnvironmentVariables = jsonencode([{name: "COMMIT_ID", type: "PLAINTEXT", value: "${var.commit_id}"}])
+      }
+    }
+  }
+
+}
+
 resource "aws_codepipeline" "bud_pipeline" {
   count    = contains(var.pipeline_types,"build-unit-deploy") ? 1 : 0
   name     = "${var.app_name}-${local.stack}-build-unit-deploy"
