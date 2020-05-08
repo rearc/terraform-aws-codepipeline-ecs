@@ -224,7 +224,7 @@ resource "aws_codebuild_project" "unit_tests" {
 
   source {
     type            = "CODEPIPELINE"
-    buildspec       = "unittest_buildspec.yml"
+    buildspec       = "buildspec-rspec.yml"
   }
 
   vpc_config {
