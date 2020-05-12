@@ -25,7 +25,7 @@ variable "app_name" {
 
 variable "pipeline_types" {
   type        = list(string)
-  description = "e.g. build-deploy, build-unit-deploy, e2e"
+  description = "e.g. build, build-deploy, build-unit-deploy, e2e"
   default     = ["build-deploy"]
 }
 
