@@ -12,7 +12,16 @@
         "Action": [
             "s3:*"
         ],
-        "Resource": "${codepipeline_bucket_arn}/*",
+        "Resource": [${bucket_arns}],
+        "Effect": "Allow"
+    },
+    {
+        "Action": [
+          "codepipeline:StartPipelineExecution"
+        ],
+        "Resource": [
+          "arn:aws:codepipeline:${region}:${aws_account_id}:${app_name}-${stack}-*"
+        ],
         "Effect": "Allow"
     },
     {

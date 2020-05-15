@@ -1,10 +1,16 @@
 locals {
-  codepipeline_bucket_name = var.codepipeline_bucket_name != "" ? var.codepipeline_bucket_name : "codepipeline-${var.region}-${var.aws_account_id}"
-  stack                    = var.stack != "" ? var.stack : var.environment
+  bucket_names = var.bucket_name != "" ? [ var.codepipeline_bucket_name, var.bucket_name ] : [  var.codepipeline_bucket_name ]
+  stack        = var.stack != "" ? var.stack : var.environment
 }
 
 data "aws_s3_bucket" "codepipeline_bucket" {
-  bucket = local.codepipeline_bucket_name
+  bucket = var.codepipeline_bucket_name
+}
+
+data "aws_s3_bucket" "buckets" {
+  count = length(local.bucket_names)
+
+  bucket= local.bucket_names[count.index]
 }
 
 resource "aws_codepipeline" "b_pipeline" {
@@ -51,7 +57,7 @@ resource "aws_codepipeline" "b_pipeline" {
       version          = "1"
 
       configuration    = {
-        ProjectName          = aws_codebuild_project.build.name
+        ProjectName          = aws_codebuild_project.build[0].name
         EnvironmentVariables = jsonencode([{name: "COMMIT_ID", type: "PLAINTEXT", value: "${var.commit_id}"}])
       }
     }
@@ -102,7 +108,7 @@ resource "aws_codepipeline" "bd_pipeline" {
       version          = "1"
 
       configuration    = {
-        ProjectName          = aws_codebuild_project.build.name
+        ProjectName          = aws_codebuild_project.build[0].name
         EnvironmentVariables = jsonencode([{name: "COMMIT_ID", type: "PLAINTEXT", value: "${var.commit_id}"}])
       }
     }
@@ -118,7 +124,7 @@ resource "aws_codepipeline" "bd_pipeline" {
       input_artifacts = ["ImageArtifact", "DefinitionArtifact"]
       version         = "1"
       configuration   = {
-        ApplicationName                = "${aws_codedeploy_app.codedeploy.name}"
+        ApplicationName                = aws_codedeploy_app.codedeploy[0].name
         DeploymentGroupName            = aws_codedeploy_deployment_group.deployment_group[0].deployment_group_name
         TaskDefinitionTemplateArtifact = "DefinitionArtifact"
         TaskDefinitionTemplatePath     = "taskdef.json",
@@ -175,7 +181,7 @@ resource "aws_codepipeline" "bu_pipeline" {
       version          = "1"
 
       configuration    = {
-        ProjectName          = aws_codebuild_project.build.name
+        ProjectName          = aws_codebuild_project.build[0].name
         EnvironmentVariables = jsonencode([{name: "COMMIT_ID", type: "PLAINTEXT", value: "${var.commit_id}"}])
       }
     }
@@ -194,7 +200,77 @@ resource "aws_codepipeline" "bu_pipeline" {
       version          = "1"
 
       configuration    = {
-        ProjectName          = "${aws_codebuild_project.unit_tests.name}"
+        ProjectName          = "${aws_codebuild_project.unit_tests[0].name}"
+        EnvironmentVariables = jsonencode([{name: "COMMIT_ID", type: "PLAINTEXT", value: "${var.commit_id}"}])
+      }
+    }
+  }
+
+}
+
+resource "aws_codepipeline" "bp_pipeline" {
+  count    = contains(var.pipeline_types,"build-publish") ? 1 : 0
+  name     = "${var.app_name}-${local.stack}-build-publish"
+  role_arn = "${aws_iam_role.codepipeline_role.arn}"
+
+  artifact_store {
+    location = data.aws_s3_bucket.codepipeline_bucket.bucket
+    type     = "S3"
+  }
+
+  stage {
+    name = "Source"
+
+    action {
+      name             = "github_source"
+      category         = "Source"
+      owner            = "ThirdParty"
+      provider         = "GitHub"
+      version          = "1"
+      output_artifacts = ["code"]
+
+      configuration    = {
+        OAuthToken           = "${var.github_token}"
+        Owner                = "${var.repo_owner}"
+        Repo                 = "${var.app_name}"
+        Branch               = "${var.branch_name}"
+        PollForSourceChanges = "false"
+      }
+    }
+  }
+
+  stage {
+    name = "Build"
+
+    action {
+      name             = "Build"
+      category         = "Build"
+      owner            = "AWS"
+      provider         = "CodeBuild"
+      input_artifacts  = ["code"]
+      output_artifacts = ["ImageArtifact"]
+      version          = "1"
+
+      configuration    = {
+        ProjectName          = aws_codebuild_project.build[0].name
+        EnvironmentVariables = jsonencode([{name: "COMMIT_ID", type: "PLAINTEXT", value: "${var.commit_id}"}])
+      }
+    }
+  }
+
+  stage {
+    name = "Publish"
+
+    action {
+      name             = "Publish"
+      category         = "Build"
+      owner            = "AWS"
+      provider         = "CodeBuild"
+      input_artifacts  = ["code"]
+      version          = "1"
+
+      configuration    = {
+        ProjectName          = aws_codebuild_project.publish[0].name
         EnvironmentVariables = jsonencode([{name: "COMMIT_ID", type: "PLAINTEXT", value: "${var.commit_id}"}])
       }
     }
@@ -246,7 +322,7 @@ resource "aws_codepipeline" "bud_pipeline" {
       version          = "1"
 
       configuration    = {
-        ProjectName          = aws_codebuild_project.build.name
+        ProjectName          = aws_codebuild_project.build[0].name
         EnvironmentVariables = jsonencode([{name: "COMMIT_ID", type: "PLAINTEXT", value: "${var.commit_id}"}])
       }
     }
@@ -265,7 +341,7 @@ resource "aws_codepipeline" "bud_pipeline" {
       version          = "1"
 
       configuration    = {
-        ProjectName          = "${aws_codebuild_project.unit_tests.name}"
+        ProjectName          = aws_codebuild_project.unit_tests[0].name
         EnvironmentVariables = jsonencode([{name: "COMMIT_ID", type: "PLAINTEXT", value: "${var.commit_id}"}])
       }
     }
@@ -281,7 +357,7 @@ resource "aws_codepipeline" "bud_pipeline" {
       input_artifacts = ["ImageArtifact", "DefinitionArtifact"]
       version         = "1"
       configuration   = {
-        ApplicationName                = "${aws_codedeploy_app.codedeploy.name}"
+        ApplicationName                = aws_codedeploy_app.codedeploy[0].name
         DeploymentGroupName            = aws_codedeploy_deployment_group.deployment_group[0].deployment_group_name
         TaskDefinitionTemplateArtifact = "DefinitionArtifact"
         TaskDefinitionTemplatePath     = "taskdef.json",
@@ -336,7 +412,7 @@ resource "aws_codepipeline" "e_pipeline" {
       version          = "1"
 
       configuration    = {
-        ProjectName          = "${aws_codebuild_project.e2e_tests.name}"
+        ProjectName          = aws_codebuild_project.e2e_tests[0].name
         EnvironmentVariables = jsonencode([{name: "COMMIT_ID", type: "PLAINTEXT", value: "${var.commit_id}"}])
       }
     }

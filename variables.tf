@@ -47,6 +47,12 @@ variable "stack" {
   default     = ""
 }
 
+variable "bucket_name" {
+  type        = string
+  description = "S3 bucket for CodeBuild to have read/write access to"
+  default     = ""
+}
+
 variable "codepipeline_bucket_name" {
   type        = string
   description = "S3 bucket to store CodePipeline artifacts"

@@ -22,7 +22,9 @@ resource "aws_iam_role_policy" "codebuild_role_policy" {
     region = var.region, 
     aws_account_id = var.aws_account_id,
     environment = var.environment,
-    codepipeline_bucket_arn = data.aws_s3_bucket.codepipeline_bucket.arn,
+    app_name = var.app_name,
+    stack = local.stack,
+    bucket_arns =  join(",", [for arn in data.aws_s3_bucket.buckets[*].arn : format("\"%s\",\"%s/*\"", arn, arn)]),
     private_subnet_arns = join(",", [for arn in data.aws_subnet.private_subnets[*].arn : format("\"%s\"", arn)])
   })
 }
