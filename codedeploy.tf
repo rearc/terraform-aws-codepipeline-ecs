@@ -36,7 +36,7 @@ resource "aws_codedeploy_deployment_group" "deployment_group" {
 
   ecs_service {
     cluster_name = "${var.ecs_cluster_name}"
-    service_name = "app_${var.app_name}_${local.stack}_service"
+    service_name = "app_${var.app_name}_${var.environment}_service"
   }
 
   load_balancer_info {
