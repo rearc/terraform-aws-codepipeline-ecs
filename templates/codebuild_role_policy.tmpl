@@ -3,6 +3,13 @@
   "Statement": [
     {
       "Effect": "Allow",
+      "Action": "iam:PassRole",
+      "Resource": [
+          "arn:aws:iam::${aws_account_id}:role/ecsTaskExecutionRole"
+      ]
+    },
+    {
+      "Effect": "Allow",
       "Action": [
         "ssm:GetParameters"
       ],
@@ -13,6 +20,15 @@
             "s3:*"
         ],
         "Resource": [${bucket_arns}],
+        "Effect": "Allow"
+    },
+    {
+        "Action": [
+            "ecs:RegisterTaskDefinition",
+            "ecs:RunTask",
+            "ecs:UpdateService"
+        ],
+        "Resource": ["*"],
         "Effect": "Allow"
     },
     {

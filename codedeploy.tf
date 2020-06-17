@@ -1,5 +1,5 @@
 resource "aws_codedeploy_app" "codedeploy" {
-  count            = contains(var.pipeline_types,"build-unit-deploy") || contains(var.pipeline_types,"build-deploy") ? 1 : 0
+  count            = contains(var.pipeline_types,"build-unit-deploy") || contains(var.pipeline_types,"build-deploy") || contains(var.pipeline_types,"build-unit-migrate-deploy-update") ? 1 : 0
   
   name             = "${var.app_name}_${local.stack}_codedeploy_app"
   compute_platform = "ECS"
@@ -7,7 +7,7 @@ resource "aws_codedeploy_app" "codedeploy" {
 
 
 resource "aws_codedeploy_deployment_group" "deployment_group" {
-  count                  = contains(var.pipeline_types,"build-unit-deploy") || contains(var.pipeline_types,"build-deploy") || contains(var.pipeline_types,"deploy")  ? 1 : 0
+  count                  = contains(var.pipeline_types,"build-unit-deploy") || contains(var.pipeline_types,"build-deploy") || contains(var.pipeline_types,"build-unit-migrate-deploy-update") ? 1 : 0
   app_name               = aws_codedeploy_app.codedeploy[0].name
   deployment_group_name  = "${var.app_name}_${local.stack}_deployment_group"
   service_role_arn       = "${aws_iam_role.codedeploy_iam_role.arn}"
