@@ -60,10 +60,20 @@ resource "aws_codebuild_project" "build" {
       name  = "CONTAINER_COMMAND"
       value = "${jsonencode(var.task_command)}"
     }
+    
+    environment_variable {
+      name  = "CONTAINER_ENVIRONMENT"
+      value = "${jsonencode(var.task_environment)}"
+    }
 
     environment_variable {
       name  = "CONTAINER_SECRETS"
       value = "${jsonencode(var.task_secrets)}"
+    }
+    
+    environment_variable {
+      name  = "TASK_ROLE_ARN"
+      value = "${jsonencode(var.task_role_arn)}"
     }
 
   }
@@ -138,8 +148,18 @@ resource "aws_codebuild_project" "e2e_tests" {
     }
 
     environment_variable {
+      name  = "CONTAINER_ENVIRONMENT"
+      value = "${jsonencode(var.task_environment)}"
+    }
+
+    environment_variable {
       name  = "CONTAINER_SECRETS"
       value = "${jsonencode(var.task_secrets)}"
+    }
+
+    environment_variable {
+      name  = "TASK_ROLE_ARN"
+      value = "${jsonencode(var.task_role_arn)}"
     }
 
   }
@@ -215,8 +235,18 @@ resource "aws_codebuild_project" "unit_tests" {
     }
 
     environment_variable {
+      name  = "CONTAINER_ENVIRONMENT"
+      value = "${jsonencode(var.task_environment)}"
+    }
+
+    environment_variable {
       name  = "CONTAINER_SECRETS"
       value = "${jsonencode(var.task_secrets)}"
+    }
+
+    environment_variable {
+      name  = "TASK_ROLE_ARN"
+      value = "${jsonencode(var.task_role_arn)}"
     }
 
   }
@@ -290,10 +320,20 @@ resource "aws_codebuild_project" "publish" {
       name  = "CONTAINER_COMMAND"
       value = "${jsonencode(var.task_command)}"
     }
+    
+    environment_variable {
+      name  = "CONTAINER_ENVIRONMENT"
+      value = "${jsonencode(var.task_environment)}"
+    }
 
     environment_variable {
       name  = "CONTAINER_SECRETS"
       value = "${jsonencode(var.task_secrets)}"
+    }
+    
+    environment_variable {
+      name  = "TASK_ROLE_ARN"
+      value = "${jsonencode(var.task_role_arn)}"
     }
 
   }
@@ -367,10 +407,20 @@ resource "aws_codebuild_project" "db_migrate" {
       name  = "CONTAINER_COMMAND"
       value = "${jsonencode(var.task_command)}"
     }
+    
+    environment_variable {
+      name  = "CONTAINER_ENVIRONMENT"
+      value = "${jsonencode(var.task_environment)}"
+    }
 
     environment_variable {
       name  = "CONTAINER_SECRETS"
       value = "${jsonencode(var.task_secrets)}"
+    }
+    
+    environment_variable {
+      name  = "TASK_ROLE_ARN"
+      value = "${jsonencode(var.task_role_arn)}"
     }
 
   }
@@ -444,10 +494,20 @@ resource "aws_codebuild_project" "update_service" {
       name  = "CONTAINER_COMMAND"
       value = "${jsonencode(var.task_command)}"
     }
+    
+    environment_variable {
+      name  = "CONTAINER_ENVIRONMENT"
+      value = "${jsonencode(var.task_environment)}"
+    }
 
     environment_variable {
       name  = "CONTAINER_SECRETS"
       value = "${jsonencode(var.task_secrets)}"
+    }
+    
+    environment_variable {
+      name  = "TASK_ROLE_ARN"
+      value = "${jsonencode(var.task_role_arn)}"
     }
 
   }

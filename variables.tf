@@ -122,3 +122,18 @@ variable "task_secrets" {
   description = "Secrets injected into the ECS task definition file"
   default = []
 }
+
+variable "task_environment" {
+  type = list(object({
+    name = string
+    value = string
+  }))
+  description = "Environment variables injected into the ECS task definition file"
+  default = []
+}
+
+variable "task_role_arn" {
+  type        = string
+  description = "IAM role for task to run as"
+  default     = ""
+}

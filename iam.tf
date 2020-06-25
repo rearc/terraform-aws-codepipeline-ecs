@@ -83,7 +83,7 @@ resource "aws_iam_policy" "codedeploy_ecs_policy" {
             "Effect": "Allow",
             "Action": "iam:PassRole",
             "Resource": [
-                "arn:aws:iam::${var.aws_account_id}:role/ecsTaskExecutionRole"
+                "*"
             ]
       },
         {
