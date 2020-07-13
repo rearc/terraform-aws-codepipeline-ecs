@@ -304,7 +304,7 @@ resource "aws_codepipeline" "bud_pipeline" {
         Owner                = "${var.repo_owner}"
         Repo                 = "${var.app_name}"
         Branch               = "${var.branch_name}"
-        PollForSourceChanges = "true"
+        PollForSourceChanges = "false"
       }
     }
   }
@@ -397,7 +397,7 @@ resource "aws_codepipeline" "bumdu_pipeline" {
         Owner                = "${var.repo_owner}"
         Repo                 = "${var.app_name}"
         Branch               = "${var.branch_name}"
-        PollForSourceChanges = "true"
+        PollForSourceChanges = "false"
       }
     }
   }
