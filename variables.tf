@@ -137,3 +137,15 @@ variable "task_role_arn" {
   description = "IAM role for task to run as"
   default     = ""
 }
+
+variable "build_image" {
+  type        = string
+  default     = "aws/codebuild/standard:3.0"
+  description = "Docker image for build stages"
+}
+
+variable "e2e_image" {
+  type        = string
+  default     = "cypress/browsers:chrome69"
+  description = "Docker image for e2e stages"
+}

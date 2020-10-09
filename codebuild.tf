@@ -26,7 +26,7 @@ resource "aws_codebuild_project" "build" {
 
   environment {
     compute_type                = "BUILD_GENERAL1_SMALL"
-    image                       = "aws/codebuild/standard:2.0"
+    image                       = var.build_image
     type                        = "LINUX_CONTAINER"
     image_pull_credentials_type = "CODEBUILD"
     privileged_mode             = "true"
@@ -112,7 +112,7 @@ resource "aws_codebuild_project" "e2e_tests" {
 
   environment {
     compute_type                = "BUILD_GENERAL1_SMALL"
-    image                       = "cypress/browsers:chrome69"
+    image                       = var.e2e_image
     type                        = "LINUX_CONTAINER"
     image_pull_credentials_type = "CODEBUILD"
     privileged_mode             = "true"
@@ -199,7 +199,7 @@ resource "aws_codebuild_project" "unit_tests" {
 
   environment {
     compute_type                = "BUILD_GENERAL1_SMALL"
-    image                       = "aws/codebuild/standard:2.0"
+    image                       = var.build_image
     type                        = "LINUX_CONTAINER"
     image_pull_credentials_type = "CODEBUILD"
     privileged_mode             = "true"
@@ -286,7 +286,7 @@ resource "aws_codebuild_project" "publish" {
 
   environment {
     compute_type                = "BUILD_GENERAL1_SMALL"
-    image                       = "aws/codebuild/standard:2.0"
+    image                       = var.build_image
     type                        = "LINUX_CONTAINER"
     image_pull_credentials_type = "CODEBUILD"
     privileged_mode             = "true"
@@ -373,7 +373,7 @@ resource "aws_codebuild_project" "db_migrate" {
 
   environment {
     compute_type                = "BUILD_GENERAL1_SMALL"
-    image                       = "aws/codebuild/standard:2.0"
+    image                       = var.build_image
     type                        = "LINUX_CONTAINER"
     image_pull_credentials_type = "CODEBUILD"
     privileged_mode             = "true"
@@ -460,7 +460,7 @@ resource "aws_codebuild_project" "update_service" {
 
   environment {
     compute_type                = "BUILD_GENERAL1_SMALL"
-    image                       = "aws/codebuild/standard:2.0"
+    image                       = var.build_image
     type                        = "LINUX_CONTAINER"
     image_pull_credentials_type = "CODEBUILD"
     privileged_mode             = "true"
