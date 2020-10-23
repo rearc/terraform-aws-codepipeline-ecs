@@ -76,6 +76,11 @@ resource "aws_codebuild_project" "build" {
       value = "${jsonencode(var.task_role_arn)}"
     }
 
+    environment_variable {
+      name  = "REPO_PATH"
+      value = "${jsonencode(var.repo_path)}"
+    }
+
   }
 
   logs_config {
@@ -87,6 +92,7 @@ resource "aws_codebuild_project" "build" {
 
   source {
     type            = "CODEPIPELINE"
+    buildspec       = "${var.repo_path}/buildspec.yml"
   }
 
   vpc_config {
@@ -162,6 +168,11 @@ resource "aws_codebuild_project" "e2e_tests" {
       value = "${jsonencode(var.task_role_arn)}"
     }
 
+    environment_variable {
+      name  = "REPO_PATH"
+      value = "${jsonencode(var.repo_path)}"
+    }
+
   }
 
   logs_config {
@@ -173,7 +184,7 @@ resource "aws_codebuild_project" "e2e_tests" {
 
   source {
     type            = "CODEPIPELINE"
-    buildspec       = "buildspec-cypress.yml"
+    buildspec       = "${var.repo_path}/buildspec-cypress.yml"
   }
 
   vpc_config {
@@ -249,6 +260,11 @@ resource "aws_codebuild_project" "unit_tests" {
       value = "${jsonencode(var.task_role_arn)}"
     }
 
+    environment_variable {
+      name  = "REPO_PATH"
+      value = "${jsonencode(var.repo_path)}"
+    }
+
   }
 
   logs_config {
@@ -260,7 +276,7 @@ resource "aws_codebuild_project" "unit_tests" {
 
   source {
     type            = "CODEPIPELINE"
-    buildspec       = "buildspec-rspec.yml"
+    buildspec       = "${var.repo_path}/buildspec-rspec.yml"
   }
 
   vpc_config {
@@ -336,6 +352,11 @@ resource "aws_codebuild_project" "publish" {
       value = "${jsonencode(var.task_role_arn)}"
     }
 
+    environment_variable {
+      name  = "REPO_PATH"
+      value = "${jsonencode(var.repo_path)}"
+    }
+
   }
 
   logs_config {
@@ -347,7 +368,7 @@ resource "aws_codebuild_project" "publish" {
 
   source {
     type            = "CODEPIPELINE"
-    buildspec       = "buildspec-publish.yml"
+    buildspec       = "${var.repo_path}/buildspec-publish.yml"
   }
 
   vpc_config {
@@ -423,6 +444,11 @@ resource "aws_codebuild_project" "db_migrate" {
       value = "${jsonencode(var.task_role_arn)}"
     }
 
+    environment_variable {
+      name  = "REPO_PATH"
+      value = "${jsonencode(var.repo_path)}"
+    }
+
   }
 
   logs_config {
@@ -434,7 +460,7 @@ resource "aws_codebuild_project" "db_migrate" {
 
   source {
     type            = "CODEPIPELINE"
-    buildspec       = "buildspec-db_migrate.yml"
+    buildspec       = "${var.repo_path}/buildspec-db_migrate.yml"
   }
 
   vpc_config {
@@ -510,6 +536,11 @@ resource "aws_codebuild_project" "update_service" {
       value = "${jsonencode(var.task_role_arn)}"
     }
 
+    environment_variable {
+      name  = "REPO_PATH"
+      value = "${jsonencode(var.repo_path)}"
+    }
+
   }
 
   logs_config {
@@ -521,7 +552,7 @@ resource "aws_codebuild_project" "update_service" {
 
   source {
     type            = "CODEPIPELINE"
-    buildspec       = "buildspec-update_service.yml"
+    buildspec       = "${var.repo_path}/buildspec-update_service.yml"
   }
 
   vpc_config {
