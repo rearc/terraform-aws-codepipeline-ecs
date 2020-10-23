@@ -149,3 +149,9 @@ variable "e2e_image" {
   default     = "cypress/browsers:chrome69"
   description = "Docker image for e2e stages"
 }
+
+variable "repo_path" {
+  type        = string
+  default     = "."
+  description = "Path in repository to look for Dockerfile and buildspecs"
+}
